@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychology Web Language (PWL)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 90%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #4ecdc4;
+            border-bottom-color: #4ecdc4;
+        }
+        
+        .tab:hover {
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .language-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4ecdc4;
+        }
+        
+        .language-demo h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .keyword { color: #ff6b6b; }
+        .string { color: #4ecdc4; }
+        .comment { color: #a0aec0; }
+        .number { color: #fbb6ce; }
+        
+        .quiz-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .question h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .answer {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .answer:hover {
+            background: #e2e8f0;
+            border-color: #4ecdc4;
+        }
+        
+        .answer.selected {
+            background: #4ecdc4;
+            color: white;
+            border-color: #4ecdc4;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .result-type {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .result-description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        #pwl-compiler {
+            margin-top: 20px;
+        }
+        
+        .compiler-input {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        
+        .compiler-output {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Psychology Web Language</h1>
+            <p>심리검사 페이지 제작 전용 프로그래밍 언어</p>
+        </div>
+        
+        <div class="content">
+            <div class="tab-container">
+                <button class="tab active" onclick="showTab('language')">PWL 언어</button>
+                <button class="tab" onclick="showTab('demo')">실제 테스트</button>
+                <button class="tab" onclick="showTab('compiler')">코드 컴파일러</button>
+            </div>
+            
+            <div id="language" class="tab-content active">
+                <div class="language-demo">
+                    <h3>🎯 PWL 언어 특징</h3>
+                    <p>Psychology Web Language는 심리검사 페이지를 쉽게 만들 수 있도록 설계된 도메인 특화 언어입니다.</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>직관적인 문법으로 질문과 답변 정의</li>
+                        <li>자동 점수 계산 및 결과 분석</li>
+                        <li>반응형 웹 페이지 자동 생성</li>
+                        <li>다양한 심리검사 유형 지원</li>
+                    </ul>
+                </div>
+                
+                <div class="language-demo">
+                    <h3>📝 기본 문법</h3>
+                    <div class="code-block"><span class="keyword">TEST</span> <span class="string">"성격 유형 검사"</span> {
+    <span class="keyword">DESCRIPTION</span>: <span class="string">"당신의 성격 유형을 알아보세요"</span>
+    
+    <span class="keyword">QUESTION</span> <span class="number">1</span> <span class="string">"사람들과 만나는 것이 즐겁다"</span> {
+        <span class="keyword">ANSWERS</span>: [
+            <span class="string">"매우 그렇다"</span> <span class="keyword">SCORE</span> E+<span class="number">2</span>
+            <span class="string">"그렇다"</span> <span class="keyword">SCORE</span> E+<span class="number">1</span>
+            <span class="string">"보통이다"</span> <span class="keyword">SCORE</span> <span class="number">0</span>
+            <span class="string">"아니다"</span> <span class="keyword">SCORE</span> I+<span class="number">1</span>
+            <span class="string">"전혀 아니다"</span> <span class="keyword">SCORE</span> I+<span class="number">2</span>
+        ]
+    }
+    
+    <span class="keyword">RESULT</span> E > I {
+        <span class="keyword">TYPE</span>: <span class="string">"외향형"</span>
+        <span class="keyword">DESCRIPTION</span>: <span class="string">"활발하고 사교적인 성격"</span>
+    }
+}</div>
+                </div>
+                
+                <div class="language-demo">
+                    <h3>🔧 고급 기능</h3>
+                    <div class="code-block"><span class="comment">// 조건부 결과 처리</span>
+<span class="keyword">RESULT</span> E > <span class="number">5</span> <span class="keyword">AND</span> N > <span class="number">3</span> {
+    <span class="keyword">TYPE</span>: <span class="string">"ENFP"</span>
+    <span class="keyword">DESCRIPTION</span>: <span class="string">"열정적인 활동가"</span>
+}
+
+<span class="comment">// 동적 질문 생성</span>
+<span class="keyword">GENERATE</span> <span class="number">10</span> <span class="keyword">QUESTIONS</span> <span class="keyword">FROM</span> <span class="string">"personality_template"</span>
+
+<span class="comment">// 스타일 커스터마이징</span>
+<span class="keyword">STYLE</span> {
+    <span class="keyword">THEME</span>: <span class="string">"gradient_blue"</span>
+    <span class="keyword">ANIMATION</span>: <span class="string">"fade_in"</span>
+}</div>
+                </div>
+            </div>
+            
+            <div id="demo" class="tab-content">
+                <div class="quiz-container">
+                    <h3>🧠 성격 유형 테스트</h3>
+                    <p>다음 질문들에 답하여 당신의 성격 유형을 알아보세요!</p>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress" style="width: 0%"></div>
+                    </div>
+                    
+                    <div id="questions-container">
+                        <!-- 질문들이 여기에 동적으로 생성됩니다 -->
+                    </div>
+                    
+                    <button class="btn" id="submit-btn" onclick="calculateResult()" disabled>결과 보기</button>
+                    
+                    <div id="result-container" style="display: none;">
+                        <!-- 결과가 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="compiler" class="tab-content">
+                <div id="pwl-compiler">
+                    <h3>💻 PWL 코드 컴파일러</h3>
+                    <p>아래에 PWL 코드를 작성하면 실제 심리검사 페이지로 변환됩니다!</p>
+                    
+                    <textarea class="compiler-input" id="pwl-input" placeholder="여기에 PWL 코드를 작성하세요...
+
+예시:
+TEST '학습 스타일 검사' {
+    DESCRIPTION: '당신의 학습 스타일을 알아보세요'
+    
+    QUESTION 1 '시각적 자료가 도움이 된다' {
+        ANSWERS: [
+            '매우 그렇다' SCORE V+2
+            '그렇다' SCORE V+1  
+            '보통이다' SCORE 0
+            '아니다' SCORE A+1
+            '전혀 아니다' SCORE A+2
+        ]
+    }
+    
+    RESULT V > A {
+        TYPE: '시각적 학습자'
+        DESCRIPTION: '그림과 도표로 학습하는 것을 선호합니다'
+    }
+}"></textarea>
+                    
+                    <button class="btn" onclick="compileCode()">컴파일하기</button>
+                    
+                    <div class="compiler-output" id="compiler-output">
+                        컴파일 결과가 여기에 표시됩니다...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 탭 전환 기능
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // 심리검사 데이터
+        const questions = [
+            {
+                text: "사람들과 만나는 것이 즐겁다",
+                answers: [
+                    { text: "매우 그렇다", score: { E: 2 } },
+                    { text: "그렇다", score: { E: 1 } },
+                    { text: "보통이다", score: {} },
+                    { text: "아니다", score: { I: 1 } },
+                    { text: "전혀 아니다", score: { I: 2 } }
+                ]
+            },
+            {
+                text: "새로운 아이디어를 상상하는 것을 좋아한다",
+                answers: [
+                    { text: "매우 그렇다", score: { N: 2 } },
+                    { text: "그렇다", score: { N: 1 } },
+                    { text: "보통이다", score: {} },
+                    { text: "아니다", score: { S: 1 } },
+                    { text: "전혀 아니다", score: { S: 2 } }
+                ]
+            },
+            {
+                text: "논리적으로 분석하는 것을 선호한다",
+                answers: [
+                    { text: "매우 그렇다", score: { T: 2 } },
+                    { text: "그렇다", score: { T: 1 } },
+                    { text: "보통이다", score: {} },
+                    { text: "아니다", score: { F: 1 } },
+                    { text: "전혀 아니다", score: { F: 2 } }
+                ]
+            },
+            {
+                text: "계획을 세우고 일정을 지키는 것을 선호한다",
+                answers: [
+                    { text: "매우 그렇다", score: { J: 2 } },
+                    { text: "그렇다", score: { J: 1 } },
+                    { text: "보통이다", score: {} },
+                    { text: "아니다", score: { P: 1 } },
+                    { text: "전혀 아니다", score: { P: 2 } }
+                ]
+            }
+        ];
+        
+        let currentAnswers = [];
+        let totalScore = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+        
+        // 질문 생성
+        function generateQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                questionDiv.innerHTML = `
+                    <h4>${index + 1}. ${question.text}</h4>
+                    <div class="answers">
+                        ${question.answers.map((answer, answerIndex) => `
+                            <div class="answer" onclick="selectAnswer(${index}, ${answerIndex})" data-question="${index}" data-answer="${answerIndex}">
+                                ${answer.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+        
+        // 답변 선택
+        function selectAnswer(questionIndex, answerIndex) {
+            // 이전 선택 해제
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // 새로운 선택
+            document.querySelector(`[data-question="${questionIndex}"][data-answer="${answerIndex}"]`).classList.add('selected');
+            
+            currentAnswers[questionIndex] = answerIndex;
+            updateProgress();
+            
+            // 모든 질문이 답변되었는지 확인
+            if (currentAnswers.length === questions.length && currentAnswers.every(answer => answer !== undefined)) {
+                document.getElementById('submit-btn').disabled = false;
+            }
+        }
+        
+        // 진행률 업데이트
+        function updateProgress() {
+            const progress = (currentAnswers.filter(a => a !== undefined).length / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+        
+        // 결과 계산
+        function calculateResult() {
+            // 점수 계산
+            totalScore = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+            
+            currentAnswers.forEach((answerIndex, questionIndex) => {
+                const answer = questions[questionIndex].answers[answerIndex];
+                Object.keys(answer.score).forEach(key => {
+                    totalScore[key] += answer.score[key];
+                });
+            });
+            
+            // MBTI 유형 결정
+            const type = [
+                totalScore.E >= totalScore.I ? 'E' : 'I',
+                totalScore.N >= totalScore.S ? 'N' : 'S',
+                totalScore.T >= totalScore.F ? 'T' : 'F',
+                totalScore.J >= totalScore.P ? 'J' : 'P'
+            ].join('');
+            
+            const typeDescriptions = {
+                'ENFP': '열정적인 활동가 - 창의적이고 사교적이며 항상 새로운 가능성을 추구합니다.',
+                'INFP': '열정적인 중재자 - 이상주의적이고 충성스러우며 자신의 가치관을 중요시합니다.',
+                'ENFJ': '정열적인 선도자 - 카리스마있고 영감을 주며 타인의 성장을 돕습니다.',
+                'INFJ': '선의의 옹호자 - 통찰력이 뛰어나고 이상주의적이며 원칙을 중시합니다.',
+                'ENTP': '뜨거운 논쟁가 - 똑똑하고 호기심이 많으며 도전을 즐깁니다.',
+                'INTP': '논리적인 사색가 - 분석적이고 독립적이며 객관적 진실을 추구합니다.',
+                'ENTJ': '대담한 통솔자 - 카리스마있고 자신감이 있으며 목표 달성에 집중합니다.',
+                'INTJ': '용의주도한 전략가 - 독립적이고 결단력이 있으며 장기적 비전을 가집니다.',
+                'ESFP': '자유로운 영혼의 연예인 - 활발하고 즉흥적이며 다른 사람들을 즐겁게 합니다.',
+                'ISFP': '호기심 많은 예술가 - 차분하고 친근하며 조화와 아름다움을 추구합니다.',
+                'ESFJ': '사교적인 외교관 - 배려심이 많고 협력적이며 타인의 필요를 파악합니다.',
+                'ISFJ': '용감한 수호자 - 따뜻하고 책임감이 있으며 타인을 보호하려 합니다.',
+                'ESTP': '모험을 즐기는 사업가 - 활발하고 현실적이며 순간을 즐깁니다.',
+                'ISTP': '만능 재주꾼 - 실용적이고 현실적이며 손으로 만드는 것을 좋아합니다.',
+                'ESTJ': '엄격한 관리자 - 조직적이고 효율적이며 전통과 질서를 중시합니다.',
+                'ISTJ': '청렴결백한 논리주의자 - 신뢰할 수 있고 실용적이며 체계적입니다.'
+            };
+            
+            // 결과 표시
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = `
+                <div class="result-card">
+                    <div class="result-type">${type}</div>
+                    <div class="result-description">${typeDescriptions[type]}</div>
+                    <div style="margin-top: 20px;">
+                        <p><strong>상세 점수:</strong></p>
+                        <p>외향성(E): ${totalScore.E} vs 내향성(I): ${totalScore.I}</p>
+                        <p>직관(N): ${totalScore.N} vs 감각(S): ${totalScore.S}</p>
+                        <p>사고(T): ${totalScore.T} vs 감정(F): ${totalScore.F}</p>
+                        <p>판단(J): ${totalScore.J} vs 인식(P): ${totalScore.P}</p>
+                    </div>
+                </div>
+            `;
+            
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // PWL 컴파일러
+        function compileCode() {
+            const code = document.getElementById('pwl-input').value;
+            const output = document.getElementById('compiler-output');
+            
+            try {
+                // 간단한 PWL 파서 (데모용)
+                const testMatch = code.match(/TEST\s+['"](.*?)['"]/);
+                const descMatch = code.match(/DESCRIPTION:\s+['"](.*?)['"]/);
+                const questions = code.match(/QUESTION\s+\d+\s+['"](.*?)['"]/g);
+                
+                if (testMatch) {
+                    let compiledHTML = `
